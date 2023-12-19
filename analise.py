@@ -1,6 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import pandas as pd
+import pickle
 
 
 
@@ -128,7 +129,13 @@ y_pred_xgb = model_xgb.predict(X_test)
 accuracy_xgb = accuracy_score(y_test, y_pred_xgb)
 print("XGBoost Model Accuracy:", accuracy_xgb)
 
+# Salvar o scaler em um arquivo pickle
+with open('scaler.pkl', 'wb') as scaler_file:
+    pickle.dump(scaler, scaler_file)
 
+# Salvar o modelo XGBoost em um arquivo pickle
+with open('modelo_xgb.pkl', 'wb') as model_file:
+    pickle.dump(model_xgb, model_file)
 
 
 importancias_classes = model_xgb.feature_importances_
