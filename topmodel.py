@@ -60,32 +60,12 @@ clf.fit(X_train_res, y_train_res)
 
 y_pred = clf.predict(X_test)
 
-train_sizes, train_scores, test_scores = learning_curve(clf, X, y, cv=5, scoring='accuracy', train_sizes=np.linspace(0.1, 1.0, 10))
-
-# Calcule as médias e desvios padrão dos escores
-train_scores_mean = np.mean(train_scores, axis=1)
-train_scores_std = np.std(train_scores, axis=1)
-test_scores_mean = np.mean(test_scores, axis=1)
-test_scores_std = np.std(test_scores, axis=1)
-
-# Plote a curva de aprendizado
-plt.figure(figsize=(10, 6))
-plt.fill_between(train_sizes, train_scores_mean - train_scores_std, train_scores_mean + train_scores_std, alpha=0.1, color="blue")
-plt.fill_between(train_sizes, test_scores_mean - test_scores_std, test_scores_mean + test_scores_std, alpha=0.1, color="orange")
-plt.plot(train_sizes, train_scores_mean, 'o-', color="blue", label="Treino")
-plt.plot(train_sizes, test_scores_mean, 'o-', color="orange", label="Validação")
-plt.xlabel('Tamanho do Conjunto de Treinamento')
-plt.ylabel('Pontuação de Precisão')
-plt.title('Curva de Aprendizado do Modelo')
-plt.legend(loc="best")
-plt.show()
 
 
 
 
 
-# with open('modelo_xgboost.pkl', 'wb') as file:
-#     pickle.dump(clf, file)
+
 
 
 

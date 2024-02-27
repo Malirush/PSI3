@@ -10,7 +10,24 @@ df = pd.read_csv(r'C:\Users\Lfcgl\OneDrive\Desktop\BDS\diabetes_012_health_indic
   
 colunas = df.columns.tolist()
 
+with open('modelo_xgboost.pkl', 'rb') as model_file:
+    model_xgb = pickle.load(model_file)
 
+with open('modelo_kmeans_clusters.pkl', 'rb') as model_files:
+    kmeans_model = pickle.load(model_files)
+
+def prever_cluster(novo_individuo, kmeans_model, colunas_usadas):
+    novo_individuo = novo_individuo[colunas_usadas]
+    cluster_predito = kmeans_model.predict(novo_individuo)
+    return cluster_predito
+
+kmeans_model = kmeans_model['kmeans_model']
+
+cluster_nomes = {
+    0:'Saude em bom estado!',
+    1:'Saude moderada.',
+    2:'Saude moderada/ruim.'
+}
 
 # Adicione suas abas
 tab_options = ["Analise! - ", "Analises Realizadas - ", "Modelo ML - "]
@@ -61,21 +78,6 @@ if selected_tab == "Analise! - ":
     df_filtrado.boxplot(column=coluna_selecionada, ax=ax)
     ax.set_title(f"Box Plot - {coluna_selecionada}")
     st.pyplot(fig)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -208,15 +210,6 @@ elif selected_tab == "Analises Realizadas - ":
 
 
 
-
-
-
-
-
-
-
-
-
 elif selected_tab == "Modelo ML - ":
      
 
@@ -228,6 +221,8 @@ elif selected_tab == "Modelo ML - ":
     df = df[(df['BMI'] < 80) & (df['BMI'] > 10)]
     df['Diabetes_012'] = df['Diabetes_012'].replace(2, 1)
     df = df.drop_duplicates(keep='first')   
+    cluster_x = df.drop('Diabetes_012', axis=1)
+    colunas_cluster = cluster_x.columns
 
 
     with st.expander("Configurar Sliders"):
@@ -242,14 +237,16 @@ elif selected_tab == "Modelo ML - ":
 
     if st.button("Analisar Chance de Diabetes"):
         novo_individuo = pd.DataFrame({coluna: [float(valor_slider)] for coluna, valor_slider in valorslider.items()})
-        with open('modelo_xgboost.pkl', 'rb') as model_file:
-            model_xgb = pickle.load(model_file)
         previsao_xgb = model_xgb.predict(novo_individuo)
+        
+        resultado_cluster = prever_cluster(novo_individuo, kmeans_model, colunas_cluster)
         st.write("Resultado da previsão:")
         if previsao_xgb[0] != 0:
-            st.write("Você tem chance de ter diabetes.")
+            st.write("De acordo com as analises você tem possibilidade de ter diabetes.")
         else:
-            st.write("Você tem baixa chance de ter diabetes.")
+            st.write("Chance de diabetes baixa.")
+
+        st.write(f"Você pertence ao Grupo: {cluster_nomes[resultado_cluster[0]]}")
 
 
 
